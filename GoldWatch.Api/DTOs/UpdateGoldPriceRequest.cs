@@ -1,0 +1,1 @@
+namespace GoldWatch.Api.DTOs;
