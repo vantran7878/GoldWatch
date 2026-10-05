@@ -1,4 +1,5 @@
-using GoldWatch.Api.Services;
+namespace GoldWatch.Api.Services;
+
 using GoldWatch.Api.Models;
 using GoldWatch.Api.DTOs;
 
@@ -26,7 +27,8 @@ public class GoldPriceService : IGoldPriceService
             BuyPrice = request.BuyPrice,
             SellPrice = request.SellPrice,
             Currency = request.Currency,
-            Source = request.Source
+            Source = request.Source,
+            CollectedAt = DateTime.UtcNow
         };
 
         _goldPrices.Add(goldPrice);
@@ -47,7 +49,7 @@ public class GoldPriceService : IGoldPriceService
         goldPrice.BuyPrice = request.BuyPrice;
         goldPrice.SellPrice = request.SellPrice;
         goldPrice.Currency = request.Currency;
-        goldPrice.Currency = request.Source;
+        goldPrice.Source = request.Source;
 
         return true;
     }

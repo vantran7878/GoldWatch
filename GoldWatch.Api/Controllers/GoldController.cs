@@ -13,7 +13,7 @@ public class GoldController : ControllerBase
     public GoldController(IGoldPriceService goldPriceService)
     {
         _goldPriceService = goldPriceService;
-    } 
+    }
 
     [HttpGet]
     public ActionResult<IReadOnlyList<Models.GoldPrice>> GetAll()
@@ -41,8 +41,35 @@ public class GoldController : ControllerBase
 
         return CreatedAtAction(
             nameof(GetByID),
-            new {id = goldPrice.Id},
+            new { id = goldPrice.Id },
             goldPrice
         );
+    }
+
+    [HttpPut("{id:int}")]
+    public IActionResult Update(
+        int id,
+        CreateGoldPriceRequest request)
+    {
+        var updated = _goldPriceService.Update(id, request);
+
+        if (!updated)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:int}")]
+    public IActionResult Delete(int id)
+    {
+        var deleted = _goldPriceService.Delete(id);
+        if (!deleted)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
     }
 }
