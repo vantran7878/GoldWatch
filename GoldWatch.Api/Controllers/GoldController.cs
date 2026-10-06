@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GoldWatch.Api.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
+[ApiController] // Attribute
+[Route("api/[controller]")] //Route token: lấy tên class nhưng bỏ đi controller
+
+//Class là GoldController -> route là /api/gold
 public class GoldController : ControllerBase
 {
     private readonly IGoldPriceService _goldPriceService;
