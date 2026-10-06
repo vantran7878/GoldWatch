@@ -5,10 +5,10 @@ namespace GoldWatch.Api.Services;
 
 public interface IGoldPriceService
 {
-    IReadOnlyList<GoldPrice> GetAll();
-    GoldPrice? GetByID(int id);
+    Task<IReadOnlyList<GoldPrice>> GetAllAsync();
+    Task<GoldPrice?> GetByIDAsync(int id);
 
-    GoldPrice Create(CreateGoldPriceRequest request);
-    bool Update(int id, CreateGoldPriceRequest request);
-    bool Delete(int id);
+    Task<GoldPrice> CreateAsync(CreateGoldPriceRequest request);
+    Task<bool> UpdateAsync(int id, CreateGoldPriceRequest request);
+    Task<bool> DeleteAsync(int id);
 }

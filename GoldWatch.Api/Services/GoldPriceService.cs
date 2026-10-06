@@ -2,27 +2,33 @@ namespace GoldWatch.Api.Services;
 
 using GoldWatch.Api.Models;
 using GoldWatch.Api.DTOs;
+using GoldWatch.Api.Data;
+using Microsoft.EntityFrameworkCore;
 
 public class GoldPriceService : IGoldPriceService
 {
-    private readonly List<GoldPrice> _goldPrices = new();
+    private readonly ApplicationDbContext _context;
 
-    public IReadOnlyList<GoldPrice> GetAll()
+    public GoldPriceService(ApplicationDbContext context)
     {
-        return _goldPrices;
+        _context = context;
     }
 
-    public GoldPrice? GetByID(int id)
+    public async Task<IReadOnlyList<GoldPrice>> GetAllAsync()
     {
-        GoldPrice? price = _goldPrices.FirstOrDefault(x => x.Id == id);
+        return await _context.GoldPrices.AsNoTracking().ToListAsync();
+    }
+
+    public async Task<GoldPrice?> GetByIDAsync(int id)
+    {
+        GoldPrice? price = await _context.GoldPrices.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
         return price;
     }
 
-    public GoldPrice Create(CreateGoldPriceRequest request)
+    public async Task<GoldPrice> CreateAsync(CreateGoldPriceRequest request)
     {
         var goldPrice = new GoldPrice
         {
-            Id = _goldPrices.Count + 1,
             GoldType = request.GoldType,
             BuyPrice = request.BuyPrice,
             SellPrice = request.SellPrice,
@@ -31,14 +37,16 @@ public class GoldPriceService : IGoldPriceService
             CollectedAt = DateTime.UtcNow
         };
 
-        _goldPrices.Add(goldPrice);
+        _context.GoldPrices.Add(goldPrice);
+
+        await _context.SaveChangesAsync();
 
         return goldPrice;
     }
 
-    public bool Update(int id, CreateGoldPriceRequest request)
+    public async Task<bool> UpdateAsync(int id, CreateGoldPriceRequest request)
     {
-        var goldPrice = GetByID(id);
+        var goldPrice = await _context.GoldPrices.FirstOrDefaultAsync(x => x.Id == id);
 
         if (goldPrice is null)
         {
@@ -51,19 +59,22 @@ public class GoldPriceService : IGoldPriceService
         goldPrice.Currency = request.Currency;
         goldPrice.Source = request.Source;
 
+        await _context.SaveChangesAsync();
         return true;
     }
 
-    public bool Delete(int id)
+    public async Task<bool> DeleteAsync(int id)
     {
-        var goldPrice = GetByID(id);
+        var goldPrice = await _context.GoldPrices.FirstOrDefaultAsync(x => x.Id == id);
 
         if (goldPrice is null)
         {
             return false;
         }
 
-        _goldPrices.Remove(goldPrice);
+        _context.GoldPrices.Remove(goldPrice);
+
+        await _context.SaveChangesAsync();
         return true;
     }
 }
