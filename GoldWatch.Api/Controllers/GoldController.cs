@@ -18,15 +18,16 @@ public class GoldController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<IReadOnlyList<Models.GoldPrice>> GetAll()
+    public async Task<ActionResult<IReadOnlyList<Models.GoldPrice>>> GetAll()
     {
-        return Ok(_goldPriceService.GetAll());
+        var price = await _goldPriceService.GetAllAsync();
+        return Ok(price);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<Models.GoldPrice> GetByID(int id)
+    public async Task<ActionResult<Models.GoldPrice>> GetByID(int id)
     {
-        var goldPrice = _goldPriceService.GetByID(id);
+        var goldPrice = await _goldPriceService.GetByIDAsync(id);
 
         if (goldPrice is null)
         {
@@ -37,9 +38,9 @@ public class GoldController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<Models.GoldPrice> Create(CreateGoldPriceRequest request)
+    public async Task<ActionResult<Models.GoldPrice>> Create(CreateGoldPriceRequest request)
     {
-        var goldPrice = _goldPriceService.Create(request);
+        var goldPrice = await _goldPriceService.CreateAsync(request);
 
         return CreatedAtAction(
             nameof(GetByID),
@@ -49,11 +50,11 @@ public class GoldController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
-    public IActionResult Update(
+    public async Task<IActionResult> Update(
         int id,
         CreateGoldPriceRequest request)
     {
-        var updated = _goldPriceService.Update(id, request);
+        var updated = await _goldPriceService.UpdateAsync(id, request);
 
         if (!updated)
         {
@@ -64,9 +65,9 @@ public class GoldController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var deleted = _goldPriceService.Delete(id);
+        var deleted = await _goldPriceService.DeleteAsync(id);
         if (!deleted)
         {
             return NotFound();
