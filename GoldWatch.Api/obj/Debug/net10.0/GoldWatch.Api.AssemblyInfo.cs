@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GoldWatch.Api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6eae2bbe3f9acf61d9cdeb7c6e4318949241fc87")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3db6dd9506ea9803a9c68360ec98fc7ed96ea272")]
 [assembly: System.Reflection.AssemblyProductAttribute("GoldWatch.Api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GoldWatch.Api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
