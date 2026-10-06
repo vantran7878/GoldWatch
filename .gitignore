@@ -3,6 +3,9 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+postman/
+Learning.md
+
 # dotenv files
 .env
 
