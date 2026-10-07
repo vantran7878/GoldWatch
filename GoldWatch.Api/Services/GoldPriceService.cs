@@ -3,15 +3,20 @@ namespace GoldWatch.Api.Services;
 using GoldWatch.Api.Models;
 using GoldWatch.Api.DTOs;
 using GoldWatch.Api.Data;
+using GoldWatch.Api.Services.Externals;
 using Microsoft.EntityFrameworkCore;
 
 public class GoldPriceService : IGoldPriceService
 {
     private readonly ApplicationDbContext _context;
 
-    public GoldPriceService(ApplicationDbContext context)
+    private readonly IGoldPriceProvider _goldPriceProvider;
+
+    public GoldPriceService(ApplicationDbContext context, IGoldPriceProvider goldPriceProvider)
     {
         _context = context;
+        _goldPriceProvider = goldPriceProvider;
+
     }
 
     public async Task<IReadOnlyList<GoldPrice>> GetAllAsync()
@@ -76,6 +81,18 @@ public class GoldPriceService : IGoldPriceService
 
         await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<GoldPrice> SyncLatestPriceAsync(string? goldType = null, CancellationToken cancellationToken = default)
+    {
+        // 1. Gọi external provider lấy giá vàng từ internet
+        var goldPrice = await _goldPriceProvider.FetchLatestPriceAsync(goldType, cancellationToken);
+
+        // 2. Thêm vào DbSet và lưu xuống PostgreSQL
+        _context.GoldPrices.Add(goldPrice);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return goldPrice;
     }
 }
 

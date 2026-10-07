@@ -11,4 +11,6 @@ public interface IGoldPriceService
     Task<GoldPrice> CreateAsync(CreateGoldPriceRequest request);
     Task<bool> UpdateAsync(int id, CreateGoldPriceRequest request);
     Task<bool> DeleteAsync(int id);
+
+    Task<GoldPrice> SyncLatestPriceAsync(string? goldType = null, CancellationToken cancellationToken = default);
 }

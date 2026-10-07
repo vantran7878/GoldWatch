@@ -75,4 +75,15 @@ public class GoldController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPost("sync")]
+    public async Task<ActionResult<Models.GoldPrice>> SyncLatestPrice(
+        [FromQuery] string? type,
+        CancellationToken cancellationToken
+    )
+    {
+        var syncedPrice = await _goldPriceService.SyncLatestPriceAsync(type, cancellationToken);
+
+        return Ok(syncedPrice);
+    }
 }
