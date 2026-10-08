@@ -1,0 +1,40 @@
+<div class="gold-price-container">
+    <h2> Danh sách giá vàng </h2>
+
+    @if (isLoading()) {
+    <p> Đang tải dữ liệu... </p>
+    }
+
+    @if (errorMessage()) {
+    <p class="error">{{errorMessage()}}</p>
+    }
+
+    @if (!isLoading() && prices().length > 0) {
+    <table>
+        <thead>
+            <tr>
+                <th>Loại vàng</th>
+                <th>Mua vào</th>
+                <th>Bán ra</th>
+                <th>Nguồn</th>
+                <th>Thời gian</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (price of prices(); track price.id) {
+            <tr>
+                <td> {{ price.goldType }}</td>
+                <td> {{ price.buyPrice | number }}</td>
+                <td> {{ price.sellPrice | number }}</td>
+                <td> {{ price.source }}</td>
+                <td> {{ price.collectedAt | date:'short' }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+    }
+
+    @if (!isLoading() && prices().length === 0 && !errorMessage()) {
+    <p> Chưa có dữ liệu nào </p>
+    }
+</div>
