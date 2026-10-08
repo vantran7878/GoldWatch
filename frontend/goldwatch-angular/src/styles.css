@@ -1,1 +1,75 @@
-/* You can add global styles to this file, and also import other style files */
+/* ============================================
+   GoldWatch – Global Styles
+   Theme: Luxury Gold & Warm White
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ---------- Design Tokens ---------- */
+:root {
+  /* Gold palette */
+  --gold-50:  #fffbeb;
+  --gold-100: #fef3c7;
+  --gold-200: #fde68a;
+  --gold-300: #fcd34d;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  --gold-700: #b45309;
+
+  /* Neutral warm */
+  --cream:    #fdf8f0;
+  --warm-50:  #fafaf5;
+  --warm-100: #f5f5eb;
+  --warm-200: #e8e8d8;
+  --warm-300: #d0d0b8;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+
+  /* Semantic */
+  --color-bg:        var(--cream);
+  --color-surface:   #ffffff;
+  --color-border:    var(--warm-200);
+  --color-text:      var(--gray-900);
+  --color-text-muted: var(--gray-500);
+  --color-accent:    var(--gold-500);
+  --color-accent-dark: var(--gold-700);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(180,130,0,0.08);
+  --shadow-md: 0 4px 16px rgba(180,130,0,0.12);
+  --shadow-lg: 0 8px 32px rgba(180,130,0,0.16);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+
+  /* Transition */
+  --transition: 0.2s ease;
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(ellipse 80% 40% at 50% -20%, rgba(251,191,36,0.12) 0%, transparent 70%);
+}

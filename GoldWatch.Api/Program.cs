@@ -12,6 +12,16 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new
 InvalidOperationException("Connection string 'DefaultConnection' not found");
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy.WithOrigins("http://localhost:4200")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options
                 => options.UseNpgsql(connectionString));
 // ApplicationDbContext được đăng ký với vòng đời "Scoped"
@@ -45,6 +55,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseCors("AllowAngularDev");
 
 app.UseHttpsRedirection();
 

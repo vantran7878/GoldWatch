@@ -1,40 +1,79 @@
-<div class="gold-price-container">
-    <h2> Danh sách giá vàng </h2>
+<div class="gold-price-page">
 
+  <!-- Page Header -->
+  <header class="page-header">
+    <div class="logo-icon">🏅</div>
+    <h1>Gold<span>Watch</span></h1>
+    <p class="subtitle">Theo dõi giá vàng thời gian thực</p>
+  </header>
+
+  <!-- Main Card -->
+  <div class="card">
+
+    <!-- Card Header -->
+    <div class="card-header">
+      <h2>Danh sách giá vàng</h2>
+      <span class="badge">
+        <span class="dot"></span>
+        Trực tiếp
+      </span>
+    </div>
+
+    <!-- Loading State -->
     @if (isLoading()) {
-    <p> Đang tải dữ liệu... </p>
+      <div class="state-box">
+        <div class="spinner"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
     }
 
+    <!-- Error State -->
     @if (errorMessage()) {
-    <p class="error">{{errorMessage()}}</p>
+      <div class="state-box state-error">
+        <span class="state-icon">⚠️</span>
+        <p>{{ errorMessage() }}</p>
+      </div>
     }
 
-    @if (!isLoading() && prices().length > 0) {
-    <table>
-        <thead>
-            <tr>
-                <th>Loại vàng</th>
-                <th>Mua vào</th>
-                <th>Bán ra</th>
-                <th>Nguồn</th>
-                <th>Thời gian</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (price of prices(); track price.id) {
-            <tr>
-                <td> {{ price.goldType }}</td>
-                <td> {{ price.buyPrice | number }}</td>
-                <td> {{ price.sellPrice | number }}</td>
-                <td> {{ price.source }}</td>
-                <td> {{ price.collectedAt | date:'short' }}</td>
-            </tr>
-            }
-        </tbody>
-    </table>
-    }
-
+    <!-- Empty State -->
     @if (!isLoading() && prices().length === 0 && !errorMessage()) {
-    <p> Chưa có dữ liệu nào </p>
+      <div class="state-box">
+        <span class="state-icon">📭</span>
+        <p>Chưa có dữ liệu nào</p>
+      </div>
     }
+
+    <!-- Data Table -->
+    @if (!isLoading() && prices().length > 0) {
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Loại vàng</th>
+              <th>Mua vào</th>
+              <th>Bán ra</th>
+              <th>Nguồn</th>
+              <th>Thời gian</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (price of prices(); track price.id) {
+              <tr>
+                <td>{{ price.goldType }}</td>
+                <td class="price-buy">{{ price.buyPrice | number }}</td>
+                <td class="price-sell">{{ price.sellPrice | number }}</td>
+                <td><span class="source-chip">{{ price.source }}</span></td>
+                <td class="date-cell">{{ price.collectedAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer">
+        {{ prices().length }} loại vàng &bull; Cập nhật lần cuối: {{ prices()[0]?.collectedAt | date:'HH:mm:ss' }}
+      </div>
+    }
+
+  </div>
 </div>
