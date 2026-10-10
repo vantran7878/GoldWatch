@@ -58,6 +58,94 @@ namespace GoldWatch.Api.Migrations
 
                     b.ToTable("GoldPrices");
                 });
+
+            modelBuilder.Entity("GoldWatch.Api.Models.NewsArticle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Author")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CollectedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("SourceID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SourceID");
+
+                    b.HasIndex("Url")
+                        .IsUnique();
+
+                    b.ToTable("NewsArticles", (string)null);
+                });
+
+            modelBuilder.Entity("GoldWatch.Api.Models.NewsSource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RssUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SourceType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NewsSources", (string)null);
+                });
+
+            modelBuilder.Entity("GoldWatch.Api.Models.NewsArticle", b =>
+                {
+                    b.HasOne("GoldWatch.Api.Models.NewsSource", "Source")
+                        .WithMany("Articles")
+                        .HasForeignKey("SourceID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Source");
+                });
+
+            modelBuilder.Entity("GoldWatch.Api.Models.NewsSource", b =>
+                {
+                    b.Navigation("Articles");
+                });
 #pragma warning restore 612, 618
         }
     }
