@@ -3,6 +3,7 @@ using GoldWatch.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using GoldWatch.Api.Services;
 using GoldWatch.Api.Services.Externals;
+using GoldWatch.Api.Services.News;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,6 +21,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<IGoldPriceService, GoldPriceService>();
+builder.Services.AddScoped<INewsSourceService, NewsSourceService>();
 builder.Services.AddControllers();
 
 
