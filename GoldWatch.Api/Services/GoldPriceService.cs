@@ -88,6 +88,16 @@ public class GoldPriceService : IGoldPriceService
         // 1. Gọi external provider lấy giá vàng từ internet
         var goldPrice = await _goldPriceProvider.FetchLatestPriceAsync(goldType, cancellationToken);
 
+        var existingPrice = await _context.GoldPrices.AsNoTracking().FirstOrDefaultAsync(x => x.GoldType == goldPrice.GoldType &&
+              x.Source == goldPrice.Source &&
+              x.CollectedAt == goldPrice.CollectedAt,
+              cancellationToken);
+
+        if (existingPrice is not null)
+        {
+            return existingPrice;
+        }
+
         // 2. Thêm vào DbSet và lưu xuống PostgreSQL
         _context.GoldPrices.Add(goldPrice);
         await _context.SaveChangesAsync(cancellationToken);

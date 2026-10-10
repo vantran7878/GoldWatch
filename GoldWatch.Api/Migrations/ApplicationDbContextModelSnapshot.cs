@@ -53,6 +53,9 @@ namespace GoldWatch.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GoldType", "Source", "CollectedAt")
+                        .IsUnique();
+
                     b.ToTable("GoldPrices");
                 });
 #pragma warning restore 612, 618
