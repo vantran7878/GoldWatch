@@ -1,0 +1,132 @@
+<div class="gold-list">
+
+  <!-- Table header -->
+  <div class="list-header">
+    <h2 class="list-title">📋 Lịch sử giá ({{ prices.length }} bản ghi)</h2>
+    <button class="btn btn--create" (click)="openCreate()">+ Thêm thủ công</button>
+  </div>
+
+  <!-- Table -->
+  @if (prices.length > 0) {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Loại vàng</th>
+            <th>Giá Mua (VND)</th>
+            <th>Giá Bán (VND)</th>
+            <th>Nguồn</th>
+            <th>Thời gian</th>
+            <th class="col-actions">Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (price of prices; track price.id) {
+            <tr [class.row--latest]="$index === 0">
+              <td class="col-id">{{ price.id }}</td>
+              <td class="col-type">
+                <span class="tag">{{ price.goldType }}</span>
+              </td>
+              <td class="col-price col-price--buy">{{ formatPrice(price.buyPrice) }}</td>
+              <td class="col-price col-price--sell">{{ formatPrice(price.sellPrice) }}</td>
+              <td class="col-source">
+                <span class="source-badge" [class.source-badge--api]="price.source === 'vang.today'">
+                  {{ price.source }}
+                </span>
+              </td>
+              <td class="col-date">{{ formatDate(price.collectedAt) }}</td>
+              <td class="col-actions">
+                <button class="btn-icon btn-icon--edit" (click)="openEdit(price)" title="Sửa">✏️</button>
+                <button class="btn-icon btn-icon--delete" (click)="confirmDelete(price.id)" title="Xóa">🗑️</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  } @else {
+    <div class="empty">Chưa có dữ liệu. Nhấn "Sync" hoặc "Thêm thủ công" để bắt đầu.</div>
+  }
+
+</div>
+
+<!-- ─── Create / Edit Modal ─────────────────────────────── -->
+@if (modalMode()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <h3>{{ modalMode() === 'create' ? '➕ Thêm bản ghi' : '✏️ Chỉnh sửa #' + editingId() }}</h3>
+        <button class="modal__close" (click)="closeModal()">✕</button>
+      </div>
+
+      <div class="modal__body">
+        @if (modalError()) {
+          <div class="form-error">⚠️ {{ modalError() }}</div>
+        }
+
+        <div class="form-grid">
+          <label class="form-field">
+            <span class="form-label">Loại vàng <span class="required">*</span></span>
+            <input class="form-input" [(ngModel)]="form.goldType"
+              placeholder="Vd: Vàng SJC 1L-10L" />
+          </label>
+
+          <label class="form-field">
+            <span class="form-label">Nguồn <span class="required">*</span></span>
+            <input class="form-input" [(ngModel)]="form.source"
+              placeholder="Vd: manual, vang.today" />
+          </label>
+
+          <label class="form-field">
+            <span class="form-label">Giá Mua (VND) <span class="required">*</span></span>
+            <input class="form-input" type="number" [(ngModel)]="form.buyPrice"
+              placeholder="14230000" min="1" />
+          </label>
+
+          <label class="form-field">
+            <span class="form-label">Giá Bán (VND) <span class="required">*</span></span>
+            <input class="form-input" type="number" [(ngModel)]="form.sellPrice"
+              placeholder="14450000" min="1" />
+          </label>
+
+          <label class="form-field">
+            <span class="form-label">Tiền tệ <span class="required">*</span></span>
+            <select class="form-input" [(ngModel)]="form.currency">
+              <option value="VND">VND</option>
+              <option value="USD">USD</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal__footer">
+        <button class="btn btn--cancel" (click)="closeModal()">Hủy</button>
+        <button class="btn btn--submit"
+          (click)="submitForm()"
+          [disabled]="isSubmitting() || !isFormValid()">
+          {{ isSubmitting() ? 'Đang lưu...' : (modalMode() === 'create' ? 'Tạo' : 'Lưu') }}
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- ─── Delete Confirm Dialog ───────────────────────────── -->
+@if (deletingId() !== null) {
+  <div class="modal-backdrop" (click)="cancelDelete()">
+    <div class="modal modal--small" (click)="$event.stopPropagation()">
+      <div class="modal__header">
+        <h3>🗑️ Xác nhận xóa</h3>
+      </div>
+      <div class="modal__body">
+        <p>Bạn có chắc muốn xóa bản ghi <strong>#{{ deletingId() }}</strong>? Hành động này không thể hoàn tác.</p>
+      </div>
+      <div class="modal__footer">
+        <button class="btn btn--cancel" (click)="cancelDelete()">Hủy</button>
+        <button class="btn btn--danger" (click)="executeDelete()">Xóa</button>
+      </div>
+    </div>
+  </div>
+}
+

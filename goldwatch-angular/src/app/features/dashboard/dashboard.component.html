@@ -1,0 +1,102 @@
+<div class="dashboard">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header__brand">
+      <span class="header__icon">📈</span>
+      <h1 class="header__title">GoldWatch</h1>
+      <span class="header__subtitle">Theo dõi giá vàng thời gian thực</span>
+    </div>
+    <button
+      class="btn btn--sync"
+      (click)="syncPrice()"
+      [disabled]="isSyncing()">
+      <span *ngIf="!isSyncing()">🔄 Sync giá mới nhất</span>
+      <span *ngIf="isSyncing()">⏳ Đang sync...</span>
+    </button>
+  </header>
+
+  <!-- Sync feedback -->
+  @if (syncMessage()) {
+    <div class="alert" [class.alert--success]="syncMessage()!.startsWith('✅')"
+                       [class.alert--error]="syncMessage()!.startsWith('❌')">
+      {{ syncMessage() }}
+    </div>
+  }
+
+  <!-- Loading -->
+  @if (isLoading()) {
+    <div class="loading">
+      <div class="loading__spinner"></div>
+      <p>Đang tải dữ liệu...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (errorMessage() && !isLoading()) {
+    <div class="alert alert--error">
+      ⚠️ {{ errorMessage() }}
+      <button class="btn btn--small" (click)="loadPrices()">Thử lại</button>
+    </div>
+  }
+
+  <!-- Nội dung chính -->
+  @if (!isLoading() && !errorMessage()) {
+
+    <!-- Price Cards -->
+    <section class="price-cards">
+      @if (latestPrice(); as p) {
+        <div class="price-card price-card--buy">
+          <div class="price-card__label">Giá Mua</div>
+          <div class="price-card__value">{{ formatPrice(p.buyPrice) }}</div>
+          <div class="price-card__meta">{{ p.goldType }}</div>
+        </div>
+
+        <div class="price-card price-card--sell">
+          <div class="price-card__label">Giá Bán</div>
+          <div class="price-card__value">{{ formatPrice(p.sellPrice) }}</div>
+          <div class="price-card__meta">{{ p.source }}</div>
+        </div>
+
+        <div class="price-card price-card--spread">
+          <div class="price-card__label">Chênh Lệch</div>
+          <div class="price-card__value">{{ formatPrice(p.sellPrice - p.buyPrice) }}</div>
+          <div class="price-card__meta">Spread</div>
+        </div>
+
+        <div class="price-card"
+          [class.price-card--up]="priceChange.direction === 'up'"
+          [class.price-card--down]="priceChange.direction === 'down'"
+          [class.price-card--flat]="priceChange.direction === 'flat'">
+          <div class="price-card__label">Thay Đổi</div>
+          <div class="price-card__value">
+            {{ priceChange.direction === 'up' ? '▲' : priceChange.direction === 'down' ? '▼' : '—' }}
+            {{ priceChange.percent | number:'1.2-2' }}%
+          </div>
+          <div class="price-card__meta">So với bản ghi trước</div>
+        </div>
+      } @else {
+        <div class="empty-state">
+          <p>Chưa có dữ liệu giá vàng.</p>
+          <button class="btn btn--sync" (click)="syncPrice()">🔄 Sync ngay</button>
+        </div>
+      }
+    </section>
+
+    <!-- Price Chart -->
+    @if (prices().length > 1) {
+      <section class="chart-section">
+        <h2 class="section-title">📊 Biểu đồ giá ({{ prices().length }} bản ghi)</h2>
+        <app-price-chart [prices]="prices()" />
+      </section>
+    }
+
+    <!-- Gold List Table -->
+    <section class="list-section">
+      <app-gold-list [prices]="prices()" (dataChanged)="loadPrices()" />
+    </section>
+
+  }
+
+</div>
+

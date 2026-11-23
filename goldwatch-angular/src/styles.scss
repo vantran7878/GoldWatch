@@ -1,0 +1,59 @@
+/* ─── CSS Variables — Dark Gold Theme ─── */
+:root {
+  --color-bg:          #0f172a;
+  --color-surface-1:   #1e293b;
+  --color-surface-2:   #334155;
+  --color-surface-3:   #475569;
+
+  --color-border:      #334155;
+
+  --color-text:        #f1f5f9;
+  --color-text-muted:  #94a3b8;
+
+  --color-gold:        #f59e0b;
+  --color-gold-light:  #fbbf24;
+}
+
+/* ─── Reset & Base ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 3px;
+  &:hover { background: var(--color-gold); }
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(245, 158, 11, 0.3);
+  color: var(--color-text);
+}
+
+/* ─── Focus ring ─── */
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
