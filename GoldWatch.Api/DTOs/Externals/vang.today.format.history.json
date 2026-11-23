@@ -1,0 +1,17 @@
+{
+    "success": true,
+    "days": 7,
+    "type": "SJL1L10",
+    "history": [
+        {
+            "date": "2026-11-23",
+            "prices": {
+                "SJL1L10": {
+                    "name": "SJC 9999",
+                    "buy": 130000000,
+                    "sell": 135000000
+                }
+            }
+        }
+    ]
+}
