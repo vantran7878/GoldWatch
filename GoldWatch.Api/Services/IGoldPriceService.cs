@@ -13,4 +13,5 @@ public interface IGoldPriceService
     Task<bool> DeleteAsync(int id);
 
     Task<GoldPrice> SyncLatestPriceAsync(string? goldType = null, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<GoldPrice>> SyncPriceHistoryAsync(string? goldType = null, int days = 7, CancellationToken cancellationToken = default);
 }

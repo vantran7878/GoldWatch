@@ -53,5 +53,39 @@ public class VangTodayGoldPriceProvider : IGoldPriceProvider
 
     }
 
+    public async Task<IReadOnlyList<GoldPrice>> FetchPriceHistoryAsync(string? goldType = null, int days = 7, CancellationToken cancellationToken = default)
+    {
+        var targetType = goldType ?? _configuration["GoldPriceApi:DefaultType"] ?? "SJL1L10";
+
+        var endpoint = $"prices?type={targetType}&days={days}";
+
+        _logger.LogInformation($"Calling API vang.today with endpoint {endpoint}");
+
+        var response = await _httpClient.GetFromJsonAsync<VangTodayHistoryResponse>(endpoint, cancellationToken);
+
+        if (response is null || !response.Success)
+        {
+            throw new HttpRequestException($"Cannot take gold prices from vang.today for type: {targetType}");
+        }
+
+        List<GoldPrice> history_list = new List<GoldPrice>();
+        foreach (var item in response.History)
+        {
+            var prices = item.Prices[targetType];
+            history_list.Add(new GoldPrice
+            {
+                GoldType = response.Type,
+                BuyPrice = prices.Buy,
+                SellPrice = prices.Sell,
+                Currency = "VND",
+                Source = "vang.today",
+                CollectedAt = DateTime.SpecifyKind(DateTime.Parse(item.Date), DateTimeKind.Utc),
+            });
+        }
+
+        return history_list;
+    }
+
+
 
 }

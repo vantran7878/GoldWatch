@@ -13,6 +13,21 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
     ?? throw new
 InvalidOperationException("Connection string 'DefaultConnection' not found");
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy.SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrEmpty(origin)) return false;
+                var uri = new Uri(origin);
+                return uri.Host == "localhost" || uri.Host == "127.0.0.1";
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options
                 => options.UseNpgsql(connectionString));
 // ApplicationDbContext được đăng ký với vòng đời "Scoped"
@@ -48,7 +63,12 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+app.UseCors("AllowAngularDev");
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Map route của các Controller vào pipeline
 app.MapControllers(); // <-- THÊM DÒNG NÀY

@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using GoldWatch.Api.DTOs;
+using GoldWatch.Api.Models;
 using GoldWatch.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -85,5 +87,15 @@ public class GoldController : ControllerBase
         var syncedPrice = await _goldPriceService.SyncLatestPriceAsync(type, cancellationToken);
 
         return Ok(syncedPrice);
+    }
+
+    [HttpPost("sync-history")]
+    public async Task<ActionResult<IReadOnlyList<GoldPrice>>> SyncPriceHistory(
+        [FromQuery] string? type,
+        [FromQuery] int days = 7,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await _goldPriceService.SyncPriceHistoryAsync(type, days, cancellationToken);
+        return Ok(result);
     }
 }

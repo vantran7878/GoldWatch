@@ -5,6 +5,7 @@ using GoldWatch.Api.DTOs;
 using GoldWatch.Api.Data;
 using GoldWatch.Api.Services.Externals;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
 
 public class GoldPriceService : IGoldPriceService
 {
@@ -88,14 +89,16 @@ public class GoldPriceService : IGoldPriceService
         // 1. Gọi external provider lấy giá vàng từ internet
         var goldPrice = await _goldPriceProvider.FetchLatestPriceAsync(goldType, cancellationToken);
 
-        var existingPrice = await _context.GoldPrices.AsNoTracking().FirstOrDefaultAsync(x => x.GoldType == goldPrice.GoldType &&
-              x.Source == goldPrice.Source &&
-              x.CollectedAt == goldPrice.CollectedAt,
-              cancellationToken);
 
-        if (existingPrice is not null)
+        // Check if the fetched exist and the duplicate with database, return and do not add.
+        var existing = await _context.GoldPrices.FirstOrDefaultAsync(x => x.GoldType == goldPrice.GoldType
+        && x.Source == goldPrice.Source
+        && x.CollectedAt == goldPrice.CollectedAt,
+        cancellationToken);
+
+        if (existing != null)
         {
-            return existingPrice;
+            return existing;
         }
 
         // 2. Thêm vào DbSet và lưu xuống PostgreSQL
@@ -103,6 +106,25 @@ public class GoldPriceService : IGoldPriceService
         await _context.SaveChangesAsync(cancellationToken);
 
         return goldPrice;
+    }
+
+    public async Task<IReadOnlyList<GoldPrice>> SyncPriceHistoryAsync(string? goldType = null, int days = 7, CancellationToken cancellationToken = default)
+    {
+        var historyPrices = await _goldPriceProvider.FetchPriceHistoryAsync(goldType, days, cancellationToken);
+
+        var datesToCheck = historyPrices.Select(p => p.CollectedAt).ToList();
+        var existingDates = await _context.GoldPrices.Where(x => x.GoldType == "SJL101L" //don't know how to not hard code the type (Take the type from historyPrices)
+                                    && x.Source == "vang.today"
+                                    && datesToCheck.Contains(x.CollectedAt))
+                                    .Select(x => x.CollectedAt)
+                                    .ToListAsync(cancellationToken);
+
+        var newPrices = historyPrices.Where(p => !existingDates.Contains(p.CollectedAt)).ToList();
+
+        if (newPrices.Count > 0) _context.GoldPrices.AddRange(newPrices);
+        await _context.SaveChangesAsync(cancellationToken);
+
+        return newPrices;
     }
 }
 
