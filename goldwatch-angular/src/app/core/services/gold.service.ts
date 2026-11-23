@@ -45,5 +45,17 @@ export class GoldService {
     }
     return this.http.post<GoldPrice>(`${this.baseUrl}/sync`, null, { params });
   }
+
+  /**
+   * POST /api/gold/sync-history?days={days}&type={goldType}
+   * Sync lịch sử n ngày từ vang.today
+   */
+  syncPriceHistory(days: number = 7, goldType?: string): Observable<GoldPrice[]> {
+    let params = new HttpParams().set('days', days);
+    if (goldType) {
+      params = params.set('type', goldType);
+    }
+    return this.http.post<GoldPrice[]>(`${this.baseUrl}/sync-history`, null, { params });
+  }
 }
 

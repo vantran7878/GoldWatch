@@ -71,16 +71,18 @@ public class VangTodayGoldPriceProvider : IGoldPriceProvider
         List<GoldPrice> history_list = new List<GoldPrice>();
         foreach (var item in response.History)
         {
-            var prices = item.Prices[targetType];
-            history_list.Add(new GoldPrice
+            if (item.Prices.TryGetValue(targetType, out var prices) || item.Prices.Values.FirstOrDefault() is { } fallbackPrices && (prices = fallbackPrices) != null)
             {
-                GoldType = response.Type,
-                BuyPrice = prices.Buy,
-                SellPrice = prices.Sell,
-                Currency = "VND",
-                Source = "vang.today",
-                CollectedAt = DateTime.SpecifyKind(DateTime.Parse(item.Date), DateTimeKind.Utc),
-            });
+                history_list.Add(new GoldPrice
+                {
+                    GoldType = string.IsNullOrWhiteSpace(prices.Name) ? response.Type : prices.Name,
+                    BuyPrice = prices.Buy,
+                    SellPrice = prices.Sell,
+                    Currency = "VND",
+                    Source = "vang.today",
+                    CollectedAt = DateTime.SpecifyKind(DateTime.Parse(item.Date), DateTimeKind.Utc),
+                });
+            }
         }
 
         return history_list;

@@ -24,7 +24,23 @@ export class DashboardComponent implements OnInit {
   syncMessage = signal<string | null>(null);
 
   ngOnInit(): void {
-    this.loadPrices();
+    this.initDashboard();
+  }
+
+  initDashboard(): void {
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    // Tự động sync 7 ngày khi web load
+    this.goldService.syncPriceHistory(7).subscribe({
+      next: () => {
+        this.loadPrices();
+      },
+      error: (err) => {
+        console.warn('Tự động sync 7 ngày gặp lỗi, chuyển sang tải dữ liệu từ DB:', err);
+        this.loadPrices();
+      }
+    });
   }
 
   loadPrices(): void {

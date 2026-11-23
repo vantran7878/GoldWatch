@@ -36,6 +36,13 @@
     font-size: 0.85rem;
     color: var(--color-text-muted);
   }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
 }
 
 // ─── Buttons ──────────────────────────────────────────────
@@ -54,6 +61,23 @@
 
     &:hover:not(:disabled) {
       background: var(--color-gold-light);
+      transform: translateY(-1px);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &--history {
+    background: var(--color-surface-2);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+
+    &:hover:not(:disabled) {
+      background: var(--color-surface-3);
+      color: var(--color-gold-light);
       transform: translateY(-1px);
     }
 

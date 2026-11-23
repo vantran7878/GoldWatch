@@ -112,19 +112,30 @@ public class GoldPriceService : IGoldPriceService
     {
         var historyPrices = await _goldPriceProvider.FetchPriceHistoryAsync(goldType, days, cancellationToken);
 
+        if (historyPrices.Count == 0)
+        {
+            return historyPrices;
+        }
+
         var datesToCheck = historyPrices.Select(p => p.CollectedAt).ToList();
-        var existingDates = await _context.GoldPrices.Where(x => x.GoldType == "SJL101L" //don't know how to not hard code the type (Take the type from historyPrices)
-                                    && x.Source == "vang.today"
-                                    && datesToCheck.Contains(x.CollectedAt))
-                                    .Select(x => x.CollectedAt)
-                                    .ToListAsync(cancellationToken);
+        var typesToCheck = historyPrices.Select(p => p.GoldType).Distinct().ToList();
+
+        var existingDates = await _context.GoldPrices
+            .Where(x => typesToCheck.Contains(x.GoldType)
+                     && x.Source == "vang.today"
+                     && datesToCheck.Contains(x.CollectedAt))
+            .Select(x => x.CollectedAt)
+            .ToListAsync(cancellationToken);
 
         var newPrices = historyPrices.Where(p => !existingDates.Contains(p.CollectedAt)).ToList();
 
-        if (newPrices.Count > 0) _context.GoldPrices.AddRange(newPrices);
-        await _context.SaveChangesAsync(cancellationToken);
+        if (newPrices.Count > 0)
+        {
+            _context.GoldPrices.AddRange(newPrices);
+            await _context.SaveChangesAsync(cancellationToken);
+        }
 
-        return newPrices;
+        return historyPrices;
     }
 }
 

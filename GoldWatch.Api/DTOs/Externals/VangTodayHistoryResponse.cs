@@ -15,7 +15,7 @@ public class VangTodayHistoryResponse
     public string Type { get; set; } = string.Empty;
 
     [JsonPropertyName("history")]
-    public List<VangTodayHistoryDateItem> History { get; set; }
+    public List<VangTodayHistoryDateItem> History { get; set; } = [];
 }
 
 public class VangTodayHistoryDateItem
