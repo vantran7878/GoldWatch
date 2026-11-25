@@ -1,0 +1,19 @@
+# render.yaml — Blueprint cho Render (đặt ở thư mục gốc repo)
+# Tham khảo: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: goldwatch-api
+    runtime: docker
+    # Render sẽ build Dockerfile trong thư mục GoldWatch.Api
+    dockerfilePath: ./GoldWatch.Api/Dockerfile
+    dockerContext: ./GoldWatch.Api
+    plan: free          # hoặc starter, standard...
+    region: singapore   # gần VN nhất trên Render
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:10000   # Render dùng port 10000 cho web services
+      - key: ConnectionStrings__DefaultConnection
+        sync: false             # bạn điền thủ công trong Render Dashboard (Supabase URL)

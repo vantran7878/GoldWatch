@@ -19,6 +19,7 @@ COPY --from=build /app/publish .
 COPY entrypoint.sh .
 RUN chmod +x entrypoint.sh
 
-EXPOSE 5248
+# Render dùng port 10000; local docker-compose ghi đè qua ASPNETCORE_URLS
+EXPOSE 5248 10000
 
 ENTRYPOINT ["./entrypoint.sh"]
