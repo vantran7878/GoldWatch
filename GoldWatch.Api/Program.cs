@@ -57,6 +57,13 @@ builder.Services.AddHttpClient<IGoldPriceProvider, VangTodayGoldPriceProvider>(
 
 var app = builder.Build();
 
+// Apply pending EF Core migrations automatically on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

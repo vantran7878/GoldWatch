@@ -1,0 +1,40 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: goldwatch-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: goldwatch
+      POSTGRES_PASSWORD: goldwatch_dev
+      POSTGRES_DB: goldwatch
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U goldwatch -d goldwatch"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  api:
+    build:
+      context: ./GoldWatch.Api
+      dockerfile: Dockerfile
+    container_name: goldwatch-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:5248
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=goldwatch;Username=goldwatch;Password=goldwatch_dev"
+      DB_HOST: postgres
+      DB_PORT: 5432
+    ports:
+      - "5248:5248"
+
+volumes:
+  pgdata:
