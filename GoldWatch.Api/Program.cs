@@ -28,6 +28,27 @@ builder.Services.AddCors(options =>
     });
 });
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>()
+    ?? [];
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularDev", policy =>
+    {
+        policy.WithOrigins(allowedOrigins)
+            .SetIsOriginAllowed(origin =>
+            {
+                if (string.IsNullOrEmpty(origin)) return false;
+                var uri = new Uri(origin);
+                return uri.Host == "localhost"
+                    || uri.Host == "127.0.0.1"
+                    || allowedOrigins.Contains(origin);
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options
                 => options.UseNpgsql(connectionString));
 // ApplicationDbContext được đăng ký với vòng đời "Scoped"
